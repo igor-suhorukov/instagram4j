@@ -16,8 +16,10 @@
 package org.brunocvcunha.instagram4j;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Optional;
 
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -87,7 +89,9 @@ public class Instagram4j {
 
     @Getter
     protected DefaultHttpClient client;
-    
+
+    private SecureRandom randomGenerator = new SecureRandom();
+
     /**
      * @param username Username
      * @param password Password
@@ -223,12 +227,18 @@ public class Instagram4j {
                 && request.requiresLogin()) {
             throw new IllegalStateException("Need to login first!");
         }
-        
+        waitBeforeRequest();
+
         request.setApi(this);
         T response = request.execute();
         
         log.debug("Result for " + request.getClass().getName() + ": " + response);
         
         return response;
+    }
+
+    @SneakyThrows
+    private void waitBeforeRequest(){
+        Thread.sleep(150+ randomGenerator.nextInt(200));
     }
 }
